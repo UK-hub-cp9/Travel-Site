@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel </title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1 id="#top">Travel</h1>
+    <nav>
+      <ul>
+        <li><a href="#top">Nearby Stations</a></li>
+        <li><a href="#route">Optimal Routes</a></li>
+        <li><a href="#schedule">Bus Schedules</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <section id="nearby">
+      <h2>Nearby Stations</h2>
+      <!-- Find nearest stations on click-->
+      <button id="find-location" onclick="openMaps()">
+        <span>Find Nearest Bus Stations</span>
+    </button>
+      
+      <div id="stations-list"></div>
+    </section>
+
+    <section id="route">
+      <h2>Optimal Routes</h2>
+      <form id="route-form">
+        <label for="start">Start Location: </label>
+        <input type="text" id="start" name="start" required><br>
+        <label for="destination">Destination: </label>
+        <input type="text" id="destination" name="destination" required><br>
+        <button type="submit">Find Route</button>
+      </form>
+      <div id="route-details"></div>
+    </section>
+
+    <section id="schedule">
+      <h2>Bus Schedules</h2>
+      <label for="station">Select Station: </label>
+      <select id="station">
+        <option value="">--Select a station--</option>
+        <!-- Station options will be dynamically added here -->
+      </select>
+      <button id="get-schedule">Get Schedule</button>
+      <div id="bus-schedule"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Travel. All rights reserved.</p>
+  </footer>
+  <!-- On click for find nearest bus stations-->
+  <script>
+        function openMaps() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                const googleMapsUrl = `https://www.google.com/maps/search/bus+stations/@${latitude},${longitude},12z`;
+                window.open(googleMapsUrl, '_blank');
+            },
+            (error) => {
+                console.error("Error code: ", error.code);
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("Permission denied. Please allow location access.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Position unavailable. Try again later.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("Request timed out. Please try again.");
+                        break;
+                    default:
+                        alert("Unable to retrieve your location.");
+                }
+            }
+        );
+    } else {
+        alert("Geolocation is not supported by your browser.");
+    }
+}
+
+    </script>
+
+    
+</body>
+</html>

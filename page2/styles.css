@@ -1,0 +1,191 @@
+/* General Reset and Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f1f1f1; /* Dark grey background */
+    color: #3c3c3c; /* Light grey text */
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Header Styling */
+  header {
+    background-color: #1c4877; /* Darker grey */
+    color: #cacaca; /* White text */
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  header h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  header nav ul li a {
+    color: #fcfafa; /* Light grey */
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  header nav ul li a:hover {
+    background-color: #12305c; /* White background on hover */
+    color: #e0e5ea; /* Dark text on hover */
+  }
+  
+  /* Main Content Styling */
+  main {
+    padding: 2rem;
+    flex-grow: 1;
+  }
+  
+  section {
+    background-color: #ffffff; /* Dark grey background for sections */
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+  }
+  
+  section:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+  }
+  
+  section h2 {
+    font-size: 1.5rem;
+    color: #3e3a3a; /* White text */
+    margin-bottom: 1rem;
+  }
+  
+  /* Button Styling */
+  button {
+    background-color: #0d2347; /* White button */
+    color: #ebecde; /* Dark text */
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #14376f; /* Dark background on hover */
+    color: #ffffff; /* White text on hover */
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 0 10px #479ffe(255, 255, 255, 0.2);
+  }
+  
+  /* Input and Select Styling */
+  input,
+  select {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 0.5rem 0 1rem;
+    border: 1px solid #007BFF; /* Border with dark grey */
+    border-radius: 15px;
+    background-color: #ffffff; /* Dark grey input background */
+    color: #000000; /* Light grey text */
+    font-size: 1rem;
+  }
+  
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: #479ffe; /* White border on focus */
+    box-shadow: 0 0 5px rgba(103, 214, 236, 0.5);
+  }
+  
+  /* Footer Styling */
+  footer {
+    background-color: #1e1e1e; /* Dark grey footer */
+    color: #999999; /* Light grey text */
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    header nav ul {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  
+    main {
+      padding: 1rem;
+    }
+  
+    button {
+      width: 100%;
+    }
+  }
+
+
+  /*map button below find nearest bus stations*/
+
+  #find-location {
+    background: url('map_img.png') no-repeat center center;
+    background-size: cover;
+    color: white;
+    border: 2px solid #007BFF; /* Border to make it stand out */
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4); /* Text shadow for better visibility */
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#find-location:hover {
+    transform: scale(1.025); /* Slight zoom effect */
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.5); /* Blue glow effect */
+}
+
+#find-location:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1); /* Dark overlay */
+  transition: background 0.3s ease;
+}
+
+#find-location:hover:before {
+  background: rgba(0, 0, 0, 0.09); /* Lighten overlay on hover */
+}
+
+#find-location span {
+    position: relative;
+    z-index: 1; /* Ensure text stays above overlay */
+}
+  

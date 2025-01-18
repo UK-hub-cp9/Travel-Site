@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mediaqueries.css" />
+  </head>
+  <body>
+    <nav id="desktop-nav">
+      <div class="logo">Travel</div>
+      <div>
+        <ul class="nav-links">
+          <li><a href="#faq">FAQs</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+    <nav id="hamburger-nav">
+      <div class="logo">Travel</div><!--emoji 🗾 -->
+      <div class="hamburger-menu">
+        <div class="hamburger-icon" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="menu-links">
+          <li><a href="#faq" onclick="toggleMenu()">FAQs</a></li>
+          <li><a href="#about" onclick="toggleMenu()">About</a></li>
+          <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+        </div>
+      </div>
+    </nav>
+
+    <section id="profile">
+      <div class="section__pic-container">
+        <img src="./assets/Travel.jpg" alt="Travel picture" />
+      </div>
+      <div class="section__text">
+        <h1 class="title">Travel</h1>
+        <p class="section__text__p2">Travel Anywhere, Any time!</p>
+        <div class="btn-container">
+
+          <form action="./page2/index2.html">
+            <button class="btn btn-color-2">Get started</button>
+          </form>
+            
+          <a href="#contact">
+          <button class="btn btn-color-1">
+            Contact Us
+          </button>
+          </a>
+          
+        </div>
+        <div id="socials-container">
+          <img
+            src="./assets/linkedin.png"
+            alt="My LinkedIn profile"
+            class="icon"
+            onclick="location.href='https://www.linkedin.com/in/utkarshkulkarni09/'"
+          />
+          <img
+            src="./assets/github.png"
+            alt="My Github profile"
+            class="icon"
+            onclick="location.href='https://github.com/UK-hub-cp9'"
+          />
+        </div>
+      </div>
+    </section>
+    <section id="faq" style="margin-top: 100px;">
+      <h2 class="faq-heading">FAQs</h2>
+      <div class="faq-container">
+        <div class="faq-item">
+          <button class="faq-question">What is Travel?</button>
+          <div class="faq-answer">Travel is your easy travel sidekick, helping you find nearby transport stations, optimal routes, and bus schedules.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">How does it save me money?</button>
+          <div class="faq-answer">By providing the best routes and schedules, Travel helps you avoid unnecessary detours and delays, saving you both time and cash.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Is it eco-friendly?</button>
+          <div class="faq-answer">Absolutely! Travel promotes public transport and carpooling, making Mother Earth smile while you travel.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">How do I get started?</button>
+          <div class="faq-answer">Simply download the app, create an account, and let Travel work its magic.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Is it available everywhere?</button>
+          <div class="faq-answer">While we wish we could teleport you everywhere, Travel is currently available in major cities. Stay tuned for more!</div>
+        </div>
+      </div>
+    </section>
+    
+    
+    
+    
+    <section id="about">
+      
+      <h1 class="title">How Travel Works</h1>
+      <br>
+      <br>
+      <div class="experience-details-container">
+        <div class="about-containers">
+          <div class="details-container color-container">
+            <div class="article-container">
+              <img
+                src="./assets/selectDestination.jpg"
+                alt="selectDestination"
+                class="project-img"
+              />
+            </div>
+            <h2 class="experience-sub-title project-title">Choose your Destination</h2>
+            
+          </div>
+          <div class="details-container color-container">
+            <div class="article-container">
+              <img
+                src="./assets/Shortestroute.jpg"
+                alt="Project 2"
+                class="project-img"
+              />
+            </div>
+            <h2 class="experience-sub-title project-title">We Provide Best TransPort options</h2>
+            
+          </div>
+          <div class="details-container color-container">
+            <div class="article-container">
+              <img
+                src="./assets/greengirl.jpg"
+                alt="Project 3"
+                class="project-img"
+              />
+            </div>
+            <h2 class="experience-sub-title project-title">Reach your Destination with minimum cost</h2>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-section">
+      <div class="hero-content">
+          <h1>Navigate Your City Smarter</h1>
+          <p>Join Travel for seamless travel. Discover smart routes, local stations, and efficient schedules at your fingertips.</p>
+          <button class="cta-button">More Info</button>
+      </div>
+  </section>
+
+    <section id="contact">
+      <p class="section__text__p1">Get in Touch</p>
+      <h1 class="title">Contact Us</h1>
+      <div class="contact-info-upper-container">
+        <div class="contact-info-container">
+          <img
+            src="./assets/email.png"
+            alt="Email icon"
+            class="icon contact-icon email-icon"
+          />
+          <p><a href="mailto:utkarshkulkarni924@gmail.com">utkarshkulkarni924@gmail.com</a></p>
+        </div>
+        <div class="contact-info-container">
+          <img
+            src="./assets/linkedin.png"
+            alt="LinkedIn icon"
+            class="icon contact-icon"
+          />
+          <p><a href="https://www.linkedin.com/in/utkarshkulkarni09/">LinkedIn</a></p>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <footer>
+      <nav>
+        <div class="nav-links-container">
+          <ul class="nav-links">
+            <li><a href="#faq">FAQs</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
+      <p>Copyright &#169; 2025 Travel. All Rights Reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+
+    <script>
+      document.querySelectorAll('.faq-question').forEach(question => {
+  question.addEventListener('click', () => {
+    const item = question.parentElement;
+    const answer = item.querySelector('.faq-answer');
+
+    // Ensure explicit height is set before toggling
+    if (!answer.style.height) {
+      answer.style.height = '0'; // Explicitly set height to 0 initially
+    }
+
+    // Toggle current FAQ item
+    if (item.classList.contains('active')) {
+      // Smoothly close the currently active item
+      item.classList.remove('active');
+      answer.style.height = answer.scrollHeight + 'px'; // Set height to current scrollHeight
+      setTimeout(() => {
+        answer.style.height = '0'; // Collapse smoothly
+      }, 10); // Small delay for smooth transition
+    } else {
+      // Smoothly open the clicked FAQ item
+      item.classList.add('active');
+      answer.style.height = answer.scrollHeight + 'px'; // Expand smoothly
+
+      // Close any other open FAQ items
+      document.querySelectorAll('.faq-item.active').forEach(openItem => {
+        if (openItem !== item) {
+          const openAnswer = openItem.querySelector('.faq-answer');
+          openItem.classList.remove('active');
+          openAnswer.style.height = openAnswer.scrollHeight + 'px'; // Set height to current scrollHeight
+          setTimeout(() => {
+            openAnswer.style.height = '0'; // Collapse smoothly
+          }, 10); // Small delay for smooth transition
+        }
+      });
+    }
+  });
+});
+
+    </script>
+    
+    
+    
+  </body>
+</html>
