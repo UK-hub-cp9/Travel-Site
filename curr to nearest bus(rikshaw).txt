@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Nearest Bus Station Finder</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <style>
+    #map {
+      height: 100vh;
+    }
+    .info-box {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="info-box">
+    <button onclick="findNearestBusStation()">Find Nearest Bus</button>
+  </div>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize the map
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // Default to India
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // OpenRouteService API key
+    const ORS_API_KEY = "5b3ce3597851110001cf624895728863837a46b783467b5b421a86d0"; // Replace with your OpenRouteService API key
+
+    let userMarker, busMarker, routeLayer;
+
+    // Function to find the nearest bus station
+    async function findNearestBusStation() {
+      // Get user's location
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+
+          // Remove existing markers and routes
+          if (userMarker) map.removeLayer(userMarker);
+          if (busMarker) map.removeLayer(busMarker);
+          if (routeLayer) map.removeLayer(routeLayer);
+
+          // Add user marker with accurate location
+          userMarker = L.marker([userLat, userLon])
+            .addTo(map)
+            .bindPopup("You(accurate)")
+            .openPopup();
+
+          // Query Overpass API for nearby bus stations
+          const busStations = await fetchBusStations(userLat, userLon);
+
+          if (!busStations.length) {
+            alert("No bus stations found nearby.");
+            return;
+          }
+
+          // Find the nearest bus station
+          let nearestBusStation = null;
+          let minDistance = Infinity;
+
+          busStations.forEach((station) => {
+            const distance = getDistance([userLat, userLon], [station.lat, station.lon]);
+            if (distance < minDistance) {
+              minDistance = distance;
+              nearestBusStation = { ...station, distance };
+            }
+          });
+
+          if (nearestBusStation) {
+            const distanceText = nearestBusStation.distance > 0
+              ? `${(nearestBusStation.distance / 1000).toFixed(2)} km`
+            : `${nearestBusStation.distance.toFixed(2)} m`;
+
+            // Add bus station marker
+            busMarker = L.marker([nearestBusStation.lat, nearestBusStation.lon])
+              .addTo(map)
+              .bindPopup(`Nearest Bus Station<br>Distance: ${distanceText}`)
+              .openPopup();
+
+            // Fetch route from OpenRouteService
+            const route = await fetchRoute(
+              [userLon, userLat],
+              [nearestBusStation.lon, nearestBusStation.lat]
+            );
+            if (route) {
+              const latLngs = route.map(coord => [coord[1], coord[0]]);
+              routeLayer = L.polyline(latLngs, { color: 'blue', weight: 4 }).addTo(map);
+              map.fitBounds(routeLayer.getBounds());
+            }
+          }
+        },
+        (error) => {
+          // Handle geolocation errors
+          alert("Error retrieving location: " + error.message);
+        },
+        {
+          enableHighAccuracy: true, // Request high accuracy
+          timeout: 10000, // 10 seconds timeout
+          maximumAge: 0 // Prevent using cached location
+        }
+      );
+    }
+
+    // Function to fetch bus stations from Overpass API
+    async function fetchBusStations(lat, lon) {
+      const radius = 10000; // Radius in meters
+      const query = `
+        [out:json];
+        node
+          ["highway"="bus_stop"]
+          (around:${radius},${lat},${lon});
+        out body;
+      `;
+      const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.elements.map((el) => ({
+          lat: el.lat,
+          lon: el.lon,
+          name: el.tags.name || "Unnamed"
+        }));
+      } catch (error) {
+        console.error("Error fetching bus stations:", error);
+        alert("Could not fetch bus stations. Please try again later.");
+        return [];
+      }
+    }
+
+    // Function to calculate the distance between two coordinates
+    function getDistance(coords1, coords2) {
+      const R = 6371e3; // Earth's radius in meters
+      const lat1 = (coords1[0] * Math.PI) / 180;
+      const lat2 = (coords2[0] * Math.PI) / 180;
+      const deltaLat = ((coords2[0] - coords1[0]) * Math.PI) / 180;
+      const deltaLon = ((coords2[1] - coords1[1]) * Math.PI) / 180;
+
+      const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+        Math.cos(lat1) * Math.cos(lat2) *
+        Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return R * c; // Distance in meters
+    }
+
+    // Function to fetch the route from OpenRouteService
+    async function fetchRoute(start, end) {
+      const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${ORS_API_KEY}&start=${start[0]},${start[1]}&end=${end[0]},${end[1]}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.features[0].geometry.coordinates;
+      } catch (error) {
+        console.error("Error fetching route:", error);
+        alert("Could not fetch route. Please try again later.");
+        return null;
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+new feature : another bus station
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Nearest Bus Station Finder</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <style>
+    #map {
+      height: 100vh;
+    }
+    .info-box {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      z-index: 1000;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+    .info-box button {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="info-box">
+    <button onclick="findNearestBusStation()">Find Nearest Bus</button>
+    <button onclick="findAnotherBusStation()" id="anotherBusBtn" disabled>Find Another</button>
+  </div>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize the map
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // Default to India
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // OpenRouteService API key
+    const ORS_API_KEY = "5b3ce3597851110001cf624895728863837a46b783467b5b421a86d0"; // Replace with your OpenRouteService API key
+
+    let userMarker, busMarker, routeLayer;
+    let busStations = [];
+    let currentStationIndex = -1;
+
+    // Function to find the nearest bus station
+    async function findNearestBusStation() {
+      // Get user's location
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+
+          // Remove existing markers and routes
+          if (userMarker) map.removeLayer(userMarker);
+          if (busMarker) map.removeLayer(busMarker);
+          if (routeLayer) map.removeLayer(routeLayer);
+
+          // Add user marker with accurate location
+          userMarker = L.marker([userLat, userLon])
+            .addTo(map)
+            .bindPopup("You (accurate)")
+            .openPopup();
+
+          // Query Overpass API for nearby bus stations
+          busStations = await fetchBusStations(userLat, userLon);
+
+          if (!busStations.length) {
+            alert("No bus stations found nearby.");
+            return;
+          }
+
+          // Sort bus stations by distance
+          busStations.sort((a, b) => getDistance([userLat, userLon], [a.lat, a.lon]) - getDistance([userLat, userLon], [b.lat, b.lon]));
+
+          currentStationIndex = 0; // Start with the first station
+          showBusStation(userLat, userLon);
+          document.getElementById("anotherBusBtn").disabled = false; // Enable "Find Another" button
+        },
+        (error) => {
+          // Handle geolocation errors
+          alert("Error retrieving location: " + error.message);
+        },
+        {
+          enableHighAccuracy: true, // Request high accuracy
+          timeout: 10000, // 10 seconds timeout
+          maximumAge: 0 // Prevent using cached location
+        }
+      );
+    }
+
+    // Function to find another bus station
+    async function findAnotherBusStation() {
+      if (busStations.length === 0) {
+        alert("No bus stations found.");
+        return;
+      }
+
+      currentStationIndex++;
+      if (currentStationIndex >= busStations.length) {
+        alert("No more bus stations available.");
+        currentStationIndex--; // Prevent going out of bounds
+        return;
+      }
+
+      const userLat = userMarker.getLatLng().lat;
+      const userLon = userMarker.getLatLng().lng;
+      showBusStation(userLat, userLon);
+    }
+
+    // Function to display a bus station and route
+    async function showBusStation(userLat, userLon) {
+      const station = busStations[currentStationIndex];
+      const distance = getDistance([userLat, userLon], [station.lat, station.lon]);
+
+      const distanceText = distance > 1000
+        ? `${(distance / 1000).toFixed(2)} km`
+        : `${distance.toFixed(2)} m`;
+
+      // Remove existing markers and routes
+      if (busMarker) map.removeLayer(busMarker);
+      if (routeLayer) map.removeLayer(routeLayer);
+
+      // Add bus station marker
+      busMarker = L.marker([station.lat, station.lon])
+        .addTo(map)
+        .bindPopup(`Bus Station: ${station.name}<br>Distance: ${distanceText}`)
+        .openPopup();
+
+      // Fetch and display route
+      const route = await fetchRoute(
+        [userLon, userLat],
+        [station.lon, station.lat]
+      );
+      if (route) {
+        const latLngs = route.map(coord => [coord[1], coord[0]]);
+        routeLayer = L.polyline(latLngs, { color: 'blue', weight: 4 }).addTo(map);
+        map.fitBounds(routeLayer.getBounds());
+      }
+    }
+
+    // Function to fetch bus stations from Overpass API
+    async function fetchBusStations(lat, lon) {
+      const radius = 10000; // Radius in meters
+      const query = `
+        [out:json];
+        node
+          ["highway"="bus_stop"]
+          (around:${radius},${lat},${lon});
+        out body;
+      `;
+      const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.elements.map((el) => ({
+          lat: el.lat,
+          lon: el.lon,
+          name: el.tags.name || "Unnamed"
+        }));
+      } catch (error) {
+        console.error("Error fetching bus stations:", error);
+        alert("Could not fetch bus stations. Please try again later.");
+        return [];
+      }
+    }
+
+    // Function to calculate the distance between two coordinates
+    function getDistance(coords1, coords2) {
+      const R = 6371e3; // Earth's radius in meters
+      const lat1 = (coords1[0] * Math.PI) / 180;
+      const lat2 = (coords2[0] * Math.PI) / 180;
+      const deltaLat = ((coords2[0] - coords1[0]) * Math.PI) / 180;
+      const deltaLon = ((coords2[1] - coords1[1]) * Math.PI) / 180;
+
+      const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+        Math.cos(lat1) * Math.cos(lat2) *
+        Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return R * c; // Distance in meters
+    }
+
+    // Function to fetch the route from OpenRouteService
+    async function fetchRoute(start, end) {
+      const url = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${ORS_API_KEY}&start=${start[0]},${start[1]}&end=${end[0]},${end[1]}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        return data.features[0].geometry.coordinates;
+      } catch (error) {
+        console.error("Error fetching route:", error);
+        alert("Could not fetch route. Please try again later.");
+        return null;
+      }
+    }
+  </script>
+</body>
+</html>
+
