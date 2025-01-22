@@ -38,7 +38,8 @@
     }).addTo(map);
 
     // OpenRouteService API key
-    const ORS_API_KEY = "5b3ce3597851110001cf624895728863837a46b783467b5b421a86d0"; // Replace with your OpenRouteService API key
+    const ORS_API_KEY = ""; // Replace with your OpenRouteService API key
+
 
     let userMarker, busMarker, routeLayer;
 
@@ -232,7 +233,7 @@
     }).addTo(map);
 
     // OpenRouteService API key
-    const ORS_API_KEY = "5b3ce3597851110001cf624895728863837a46b783467b5b421a86d0"; // Replace with your OpenRouteService API key
+    const ORS_API_KEY = ""; // Replace with your OpenRouteService API key
 
     let userMarker, busMarker, routeLayer;
     let busStations = [];
